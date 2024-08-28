@@ -1,0 +1,23 @@
+name: veksel-app
+
+services:
+  veksel:
+    build: ./
+    ports:
+      - 4567:4567
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: 1234
+      DATABASE: veksel
+
+  db:
+    restart: always
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: veksel
+    ports:
+      - 5432:5432

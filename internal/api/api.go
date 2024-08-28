@@ -26,7 +26,7 @@ func NewApi(addr string, ns service.NotesService, us service.UserService) *Api {
 func (a *Api) Run() {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/notes", a.BasicAuthMiddleware(a.notesHandler))
+	router.HandleFunc("/api/notes", a.BasicAuthMiddleware(a.notesHandler))
 
 	log.Println("Veksel started")
 

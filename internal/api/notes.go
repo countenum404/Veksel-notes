@@ -7,20 +7,6 @@ import (
 	"github.com/countenum404/Veksel/internal/types"
 )
 
-func (a *Api) accountHandler(w http.ResponseWriter, r *http.Request) {
-	methods := map[string]func(http.ResponseWriter, *http.Request) error{
-		"GET": a.handleGetAccount,
-	}
-	mh := HttpMethodHandler{Methods: methods}
-	if err := mh.Call(r.Method, w, r); err != nil {
-		WriteJson(w, http.StatusBadRequest, types.ApiError{Error: err.Error()})
-	}
-}
-
-func (a *Api) handleGetAccount(w http.ResponseWriter, r *http.Request) error {
-	return nil
-}
-
 func (a *Api) notesHandler(w http.ResponseWriter, r *http.Request) {
 	methods := map[string]func(http.ResponseWriter, *http.Request) error{
 		"GET":  a.handleGetNotes,

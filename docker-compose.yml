@@ -9,15 +9,15 @@ services:
       - db
     environment:
       DB_HOST: db
-      DB_USER: postgres
-      DB_PASSWORD: 1234
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       DATABASE: veksel
 
   db:
     restart: always
     image: postgres:latest
     environment:
-      POSTGRES_PASSWORD: 1234
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: veksel
     ports:
       - 5432:5432

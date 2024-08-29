@@ -10,7 +10,7 @@ import (
 func (a *Api) notesHandler(w http.ResponseWriter, r *http.Request) {
 	methods := map[string]func(http.ResponseWriter, *http.Request) error{
 		"GET":  a.handleGetNotes,
-		"POST": a.handleCreateNote,
+		"POST": a.handlePostNote,
 	}
 	mh := HttpMethodHandler{Methods: methods}
 	if err := mh.Call(r.Method, w, r); err != nil {
@@ -18,7 +18,7 @@ func (a *Api) notesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a *Api) handleCreateNote(w http.ResponseWriter, r *http.Request) error {
+func (a *Api) handlePostNote(w http.ResponseWriter, r *http.Request) error {
 	createNoteRequest := &types.CreateNoteRequest{}
 	if err := json.NewDecoder(r.Body).Decode(createNoteRequest); err != nil {
 		return err
@@ -28,10 +28,11 @@ func (a *Api) handleCreateNote(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	if err := a.notesService.CreateNote(createNoteRequest, user.ID); err != nil {
+	spells, err := a.notesService.CreateNote(createNoteRequest, user.ID)
+	if err != nil {
 		return err
 	}
-	WriteJson(w, http.StatusOK, createNoteRequest)
+	WriteJson(w, http.StatusOK, types.SpellResponse{NoteRequest: *createNoteRequest, Spells: *spells})
 	return nil
 }
 

@@ -10,5 +10,5 @@ type UserService interface {
 
 type NotesService interface {
 	GetNotes(userId int64) ([]types.Note, error)
-	CreateNote(note *types.CreateNoteRequest, userId int64) error
+	CreateNote(note *types.CreateNoteRequest, userId int64) (*types.SpellResult, error)
 }

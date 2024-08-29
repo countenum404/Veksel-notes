@@ -9,10 +9,12 @@ import (
 )
 
 const (
-	DB_USER     = "DB_USER"
-	DB_PASSWORD = "DB_PASSWORD"
-	DB_HOST     = "DB_HOST"
-	DATABASE    = "DATABASE"
+	DB_USER         = "DB_USER"
+	DB_PASSWORD     = "DB_PASSWORD"
+	DB_HOST         = "DB_HOST"
+	DATABASE        = "DATABASE"
+	SPELLING_URL    = "https://speller.yandex.net/services/spellservice.json/checkText?text="
+	MAX_CONTENT_LEN = 10000
 )
 
 func main() {
@@ -32,7 +34,7 @@ func main() {
 	pns := postgres.NewPostgresNotesRepository(repo)
 
 	dus := service.NewDefaultUserService(pus)
-	dns := service.NewDefaultNotesService(pns)
+	dns, _ := service.NewSpellCheckNotesService(pns, SPELLING_URL, MAX_CONTENT_LEN)
 
 	a := api.NewApi(":4567", dns, dus)
 	a.Run()

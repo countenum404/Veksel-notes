@@ -10,15 +10,15 @@ import (
 )
 
 type DefaultUserService struct {
-	Repo repository.UserRepository
+	repo repository.UserRepository
 }
 
-func NewDefaultUserService(repo repository.UserRepository) *DefaultUserService {
-	return &DefaultUserService{Repo: repo}
+func NewDefaultUserService(repos repository.UserRepository) *DefaultUserService {
+	return &DefaultUserService{repo: repos}
 }
 
 func (dus *DefaultUserService) Authenticate(username, password string) (*types.User, error) {
-	user, err := dus.Repo.GetUser(username)
+	user, err := dus.repo.GetUser(username)
 	if err != nil {
 		return nil, errors.New("INVALID USERNAME OR PASSWORD")
 	}

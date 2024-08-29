@@ -45,17 +45,21 @@ func NewSpellCheckNotesService(repo repository.NotesRepository, spellerUrl strin
 	if spellerUrl == "" || maxLen <= 0 {
 		return nil, errors.New("invalid parameters")
 	}
+
 	defaultNotesService, err := NewDefaultNotesService(repo)
 	if err != nil {
 		return nil, err
 	}
+
 	service := &SpellCheckNotesService{
 		DefaultNotesService: *defaultNotesService,
 		SpellerUrl:          spellerUrl,
 		MaxLen:              maxLen,
 	}
+
 	service.SpellerUrl = spellerUrl
 	service.MaxLen = maxLen
+
 	return service, nil
 }
 
@@ -64,9 +68,11 @@ func (ns *SpellCheckNotesService) CreateNote(note *types.CreateNoteRequest, user
 	if err != nil {
 		return nil, err
 	}
+
 	if _, err := ns.DefaultNotesService.CreateNote(note, userId); err != nil {
 		return nil, err
 	}
+
 	return result, nil
 }
 
@@ -74,18 +80,19 @@ func (ns *SpellCheckNotesService) spellCheck(text string) (*types.SpellResult, e
 	if len(text) > ns.MaxLen {
 		return nil, errors.New("NOTE IS TOO LARGE")
 	}
+
 	var url strings.Builder
 	url.WriteString(ns.SpellerUrl)
-	for _, word := range strings.Split(text, " ") {
-		url.WriteString(word)
-		url.WriteString("+")
-	}
+	url.WriteString(strings.Join(strings.Split(text, " "), "+"))
+
 	var spellResult types.SpellResult
-	r, err := http.Get(url.String())
-	json.NewDecoder(r.Body).Decode(&spellResult)
+	req, err := http.Get(url.String())
+
+	json.NewDecoder(req.Body).Decode(&spellResult)
 	if err != nil {
 		log.Println(err)
 	}
-	defer r.Body.Close()
+	req.Body.Close()
+
 	return &spellResult, nil
 }

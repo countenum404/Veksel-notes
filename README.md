@@ -3,6 +3,7 @@
 ```cfg
 DB_USER=someuser
 POSTGRES_PASSWORD=somepassword
+REDIS_HOST=redis:6379
 ```
 Я использовал стандартного пользователя postgres из PostgreSQL
 

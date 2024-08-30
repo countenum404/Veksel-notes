@@ -9,7 +9,7 @@ up:
 	docker-compose up --build $(app)
 
 build:
-	go build -o $(app) cmd/main.go 
+	go build -o $(app) cmd/main/main.go 
 
 migrate:
 	migrate -path ./schema -database 'postgres://$(DB_USER):$(POSTGRES_PASSWORD)@localhost/veksel?sslmode=disable' up

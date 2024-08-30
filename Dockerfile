@@ -1,9 +1,8 @@
 FROM golang:1.22.6-alpine3.20
 
-RUN apk add --no-cache make
 WORKDIR /go/veksel
 COPY ./ ./
-RUN make build
+RUN go build -o veksel cmd/main/main.go
 
 EXPOSE 4567
 

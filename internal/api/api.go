@@ -35,12 +35,19 @@ func (a *Api) Run() {
 
 func (a *Api) BasicAuthMiddleware(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, _, ok := r.BasicAuth()
-		if ok {
-			handler(w, r)
+		username, password, ok := r.BasicAuth()
+		if !ok {
+			logger.GetLogger().Info("Forbidden", username)
+			WriteJson(w, http.StatusForbidden, types.ApiError{Error: "Authentication failed: username and password are required"})
 			return
 		}
-		WriteJson(w, http.StatusUnauthorized, types.ApiError{Error: "You are unauthorized"})
+		user, err := a.userService.GetUser(username, password)
+		if err != nil && user == nil {
+			logger.GetLogger().Err("Can't authorize user", username, err)
+			WriteJson(w, http.StatusUnauthorized, types.ApiError{Error: "Invalid username or password"})
+			return
+		}
+		handler(w, r)
 	}
 }
 

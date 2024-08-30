@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/countenum404/Veksel/internal/types"
+	"github.com/countenum404/Veksel/pkg/logger"
 )
 
 func (a *Api) notesHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,33 +20,34 @@ func (a *Api) notesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Api) handlePostNote(w http.ResponseWriter, r *http.Request) error {
+	username, password, _ := r.BasicAuth()
+	user, _ := a.userService.GetUser(username, password)
+
 	createNoteRequest := &types.CreateNoteRequest{}
 	if err := json.NewDecoder(r.Body).Decode(createNoteRequest); err != nil {
 		return err
 	}
-	username, password, _ := r.BasicAuth()
-	user, err := a.userService.Authenticate(username, password)
-	if err != nil {
-		return err
-	}
+
 	spells, err := a.notesService.CreateNote(createNoteRequest, user.ID)
 	if err != nil {
 		return err
 	}
+
 	WriteJson(w, http.StatusOK, types.SpellResponse{NoteRequest: *createNoteRequest, Spells: *spells})
+	logger.GetLogger().Info("Note", createNoteRequest.Header, "created for User id:", user.ID, "noteLen:", len(createNoteRequest.Content))
 	return nil
 }
 
 func (a *Api) handleGetNotes(w http.ResponseWriter, r *http.Request) error {
 	username, password, _ := r.BasicAuth()
-	user, err := a.userService.Authenticate(username, password)
-	if err != nil {
-		return err
-	}
+	user, _ := a.userService.GetUser(username, password)
+
 	notes, err := a.notesService.GetNotes(user.ID)
 	if err != nil {
 		return err
 	}
+
 	WriteJson(w, http.StatusOK, notes)
+	logger.GetLogger().Info("Notes sent to User id:", user.ID, "firstname:", user.Fisrtname, "lastname:", user.Lastname)
 	return nil
 }

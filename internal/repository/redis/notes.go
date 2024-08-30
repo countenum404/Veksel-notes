@@ -29,6 +29,7 @@ func NewRedisRepository(addr string, password string, db int) *RedisRepository {
 func (rr *RedisRepository) GetNotesByUserId(userId int64) ([]types.Note, error) {
 	res, err := rr.client.Get(rr.ctx, fmt.Sprintf("%v", userId)).Result()
 	if err != nil {
+		logger.GetLogger().Err(err)
 		return nil, err
 	}
 
@@ -41,6 +42,7 @@ func (rr *RedisRepository) GetNotesByUserId(userId int64) ([]types.Note, error) 
 func (rr *RedisRepository) PutNotes(userId int64, notes []types.Note) error {
 	val, err := json.Marshal(notes)
 	if err != nil {
+		logger.GetLogger().Err(err)
 		return err
 	}
 	err = rr.client.Set(rr.ctx, fmt.Sprintf("%v", userId), val, time.Minute).Err()
@@ -48,5 +50,15 @@ func (rr *RedisRepository) PutNotes(userId int64, notes []types.Note) error {
 		logger.GetLogger().Err(err)
 		return err
 	}
+	return nil
+}
+
+func (rr *RedisRepository) DeleteNotes(userId int64) error {
+	id, err := rr.client.Del(rr.ctx, fmt.Sprintf("%v", userId)).Result()
+	if err != nil {
+		logger.GetLogger().Err(err)
+		return err
+	}
+	logger.GetLogger().Info("redis:", "id:", id, "deleted")
 	return nil
 }

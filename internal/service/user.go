@@ -17,7 +17,7 @@ func NewDefaultUserService(repos repository.UserRepository) *DefaultUserService 
 	return &DefaultUserService{repo: repos}
 }
 
-func (dus *DefaultUserService) Authenticate(username, password string) (*types.User, error) {
+func (dus *DefaultUserService) GetUser(username, password string) (*types.User, error) {
 	user, err := dus.repo.GetUser(username)
 	if err != nil {
 		return nil, errors.New("INVALID USERNAME OR PASSWORD")

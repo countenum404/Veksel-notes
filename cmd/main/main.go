@@ -26,14 +26,14 @@ const REDIS_HOST = "REDIS_HOST"
 func main() {
 	rdb := redis.NewRedisRepository(os.Getenv(REDIS_HOST), "", 0)
 
-	hardcodedPostgresCfg := map[string]string{
+	cfg := map[string]string{
 		"user":     os.Getenv(DB_USER),
 		"host":     os.Getenv(DB_HOST),
 		"database": os.Getenv(DATABASE),
 		"password": os.Getenv(DB_PASSWORD),
 	}
 
-	repo, err := postgres.NewPostgresRepository(hardcodedPostgresCfg)
+	repo, err := postgres.NewPostgresRepository(cfg)
 	if err != nil {
 		panic(err)
 	}

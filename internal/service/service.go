@@ -5,7 +5,7 @@ import (
 )
 
 type UserService interface {
-	Authenticate(username, password string) (*types.User, error)
+	GetUser(username, password string) (*types.User, error)
 }
 
 type NotesService interface {

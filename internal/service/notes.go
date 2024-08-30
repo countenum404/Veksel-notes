@@ -78,6 +78,11 @@ func (ns *SpellCheckNotesService) GetNotes(userId int64) ([]types.Note, error) {
 	if err != nil {
 		return nil, errors.New("CANNOT FIND ANY USER NOTES")
 	}
+
+	if err := ns.redisRepo.PutNotes(userId, notes); err != nil {
+		return nil, err
+	}
+
 	return notes, nil
 }
 

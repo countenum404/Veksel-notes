@@ -3,11 +3,11 @@ package api
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/countenum404/Veksel/internal/service"
 	"github.com/countenum404/Veksel/internal/types"
+	"github.com/countenum404/Veksel/pkg/logger"
 	"github.com/gorilla/mux"
 )
 
@@ -28,7 +28,7 @@ func (a *Api) Run() {
 
 	router.HandleFunc("/api/notes", a.BasicAuthMiddleware(a.notesHandler))
 
-	log.Println("Veksel started")
+	logger.GetLogger().Info("Veksel started")
 
 	http.ListenAndServe(a.listenAddr, router)
 }

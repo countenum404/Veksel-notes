@@ -3,8 +3,9 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
+
+	"github.com/countenum404/Veksel/pkg/logger"
 )
 
 type PostgresRepository struct {
@@ -17,7 +18,7 @@ func NewPostgresRepository(config map[string]string) (*PostgresRepository, error
 		config["password"],
 		config["host"],
 		config["database"])
-	log.Println(opts)
+	logger.GetLogger().Info(opts)
 	var dbpointer *sql.DB
 	for {
 		db, err := sql.Open("postgres", opts)
@@ -26,11 +27,11 @@ func NewPostgresRepository(config map[string]string) (*PostgresRepository, error
 		}
 		err = db.Ping()
 		if err == nil {
-			log.Println("Connected to db")
+			logger.GetLogger().Info("Connected to db")
 			dbpointer = db
 			break
 		}
-		log.Println("Waiting for db connection")
+		logger.GetLogger().Info("Waiting for db connection")
 		time.Sleep(time.Second)
 		continue
 	}

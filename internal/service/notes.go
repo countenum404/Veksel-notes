@@ -3,13 +3,13 @@ package service
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/countenum404/Veksel/internal/repository"
 	"github.com/countenum404/Veksel/internal/repository/redis"
 	"github.com/countenum404/Veksel/internal/types"
+	"github.com/countenum404/Veksel/pkg/logger"
 )
 
 type DefaultNotesService struct {
@@ -69,7 +69,7 @@ func NewSpellCheckNotesService(repo repository.NotesRepository, rdb *redis.Redis
 func (ns *SpellCheckNotesService) GetNotes(userId int64) ([]types.Note, error) {
 	notes, err := ns.redisRepo.GetNotesByUserId(userId)
 	if err != nil {
-		log.Println(err)
+		logger.GetLogger().Err(err)
 	} else {
 		return notes, nil
 	}
@@ -98,7 +98,7 @@ func (ns *SpellCheckNotesService) CreateNote(note *types.CreateNoteRequest, user
 	go func() {
 		notes, err := ns.DefaultNotesService.GetNotes(userId)
 		if err != nil {
-			log.Println(err)
+			logger.GetLogger().Err(err)
 		}
 		ns.redisRepo.PutNotes(userId, notes)
 	}()
@@ -119,7 +119,7 @@ func (ns *SpellCheckNotesService) spellCheck(text string) (*types.SpellResult, e
 
 	json.NewDecoder(req.Body).Decode(&spellResult)
 	if err != nil {
-		log.Println(err)
+		logger.GetLogger().Err(err)
 	}
 	req.Body.Close()
 

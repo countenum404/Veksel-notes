@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/countenum404/Veksel/internal/types"
+	"github.com/countenum404/Veksel/pkg/logger"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -45,7 +45,7 @@ func (rr *RedisRepository) PutNotes(userId int64, notes []types.Note) error {
 	}
 	err = rr.client.Set(rr.ctx, fmt.Sprintf("%v", userId), val, time.Minute).Err()
 	if err != nil {
-		log.Println("[ERROR]", err)
+		logger.GetLogger().Err(err)
 		return err
 	}
 	return nil

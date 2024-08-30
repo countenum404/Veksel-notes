@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/countenum404/Veksel/internal/api"
@@ -25,7 +24,6 @@ const (
 const REDIS_HOST = "REDIS_HOST"
 
 func main() {
-	log.Println(os.Getenv(REDIS_HOST))
 	rdb := redis.NewRedisRepository(os.Getenv(REDIS_HOST), "", 0)
 
 	hardcodedPostgresCfg := map[string]string{

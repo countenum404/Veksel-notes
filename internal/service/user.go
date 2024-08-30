@@ -3,10 +3,10 @@ package service
 import (
 	"encoding/base64"
 	"errors"
-	"log"
 
 	"github.com/countenum404/Veksel/internal/repository"
 	"github.com/countenum404/Veksel/internal/types"
+	"github.com/countenum404/Veksel/pkg/logger"
 )
 
 type DefaultUserService struct {
@@ -24,7 +24,7 @@ func (dus *DefaultUserService) Authenticate(username, password string) (*types.U
 	}
 	userPassword, err := base64.StdEncoding.DecodeString(user.Password)
 	if err != nil {
-		log.Println(err)
+		logger.GetLogger().Err(err)
 	}
 	if string(userPassword) != password {
 		return nil, errors.New("INVALID USERNAME OR PASSWORD")

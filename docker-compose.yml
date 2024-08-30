@@ -11,12 +11,24 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      migrate:
+        condition: service_started
     environment:
       DB_HOST: db
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       DATABASE: veksel
       REDIS_HOST: ${REDIS_HOST}
+
+  migrate:
+    container_name: migration
+    image: migrate/migrate
+    volumes:
+      - ./schema:/schema
+    command: ["-path", "/schema", "-database",  "postgres://${DB_USER}:${POSTGRES_PASSWORD}@db:5432/veksel?sslmode=disable", "up"]
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     container_name: postgres

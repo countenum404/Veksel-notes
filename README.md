@@ -73,7 +73,7 @@ curl --location 'http://localhost:4567/api/notes' \
 }'
 ```
 
-**Example:**
+**Response:**
 ```json
 {
     "created_note": {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strings"
+	"net/url"
 
 	"github.com/countenum404/Veksel/internal/repository"
 	"github.com/countenum404/Veksel/internal/repository/redis"
@@ -39,14 +39,11 @@ func (dns *DefaultNotesService) CreateNote(note *types.CreateNoteRequest, userId
 type SpellCheckNotesService struct {
 	DefaultNotesService
 	redisRepo  *redis.RedisRepository
-	spellerUrl string
+	spellerUrl url.URL
 	maxLen     int
 }
 
-func NewSpellCheckNotesService(repo repository.NotesRepository, rdb *redis.RedisRepository, spellerUrl string, maxLen int) (*SpellCheckNotesService, error) {
-	if spellerUrl == "" || maxLen <= 0 {
-		return nil, errors.New("invalid parameters")
-	}
+func NewSpellCheckNotesService(repo repository.NotesRepository, rdb *redis.RedisRepository, spellerUrl url.URL, maxLen int) (*SpellCheckNotesService, error) {
 
 	defaultNotesService, err := NewDefaultNotesService(repo)
 	if err != nil {
@@ -108,17 +105,22 @@ func (ns *SpellCheckNotesService) spellCheck(text string) (*types.SpellResult, e
 		return nil, errors.New("note is too large")
 	}
 
-	var url strings.Builder
-	url.WriteString(ns.spellerUrl)
-	url.WriteString(strings.Join(strings.Split(text, " "), "+"))
-
 	var spellResult types.SpellResult
-	req, err := http.Get(url.String())
-
-	json.NewDecoder(req.Body).Decode(&spellResult)
+	req, err := http.Get(ns.buildSpellerUrl(text))
 	if err != nil {
 		logger.GetLogger().Err(err)
 	}
+	json.NewDecoder(req.Body).Decode(&spellResult)
 	req.Body.Close()
 	return &spellResult, nil
+}
+
+func (ns *SpellCheckNotesService) buildSpellerUrl(text string) string {
+	v := make(url.Values)
+	v.Add("text", text)
+
+	su := ns.spellerUrl
+	su.RawQuery = v.Encode()
+
+	return su.String()
 }

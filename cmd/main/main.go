@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/url"
 	"os"
 
 	"github.com/countenum404/Veksel/internal/api"
@@ -16,14 +17,17 @@ const (
 	DATABASE    = "DATABASE"
 )
 
-const (
-	SPELLING_URL    = "https://speller.yandex.net/services/spellservice.json/checkText?text="
-	MAX_CONTENT_LEN = 10000
-)
-
+const MAX_CONTENT_LEN = 10000
 const REDIS_HOST = "REDIS_HOST"
 
 func main() {
+
+	SpellingUrl := url.URL{
+		Scheme: "https",
+		Host:   "speller.yandex.net",
+		Path:   "/services/spellservice.json/checkText",
+	}
+
 	rdb := redis.NewRedisRepository(os.Getenv(REDIS_HOST), "", 0)
 
 	cfg := map[string]string{
@@ -41,7 +45,7 @@ func main() {
 	pns := postgres.NewPostgresNotesRepository(repo)
 
 	dus := service.NewDefaultUserService(pus)
-	dns, _ := service.NewSpellCheckNotesService(pns, rdb, SPELLING_URL, MAX_CONTENT_LEN)
+	dns, _ := service.NewSpellCheckNotesService(pns, rdb, SpellingUrl, MAX_CONTENT_LEN)
 
 	a := api.NewApi(":4567", dns, dus)
 	a.Run()

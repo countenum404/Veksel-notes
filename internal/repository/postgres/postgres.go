@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/countenum404/Veksel/pkg/logger"
@@ -13,15 +13,14 @@ type PostgresRepository struct {
 }
 
 func NewPostgresRepository(config map[string]string) (*PostgresRepository, error) {
-	opts := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
-		config["user"],
-		config["password"],
-		config["host"],
-		config["database"])
-	logger.GetLogger().Info(opts)
+	dataSource := NewDataSourceString(
+		"postgres", config["host"], config["database"], config["user"], config["password"], "disable",
+	)
+
+	logger.GetLogger().Info(dataSource)
 	var dbpointer *sql.DB
 	for {
-		db, err := sql.Open("postgres", opts)
+		db, err := sql.Open("postgres", dataSource)
 		if err != nil {
 			return nil, err
 		}
@@ -36,4 +35,19 @@ func NewPostgresRepository(config map[string]string) (*PostgresRepository, error
 		continue
 	}
 	return &PostgresRepository{db: dbpointer}, nil
+}
+
+func NewDataSourceString(proto, host, path, user, password, sslmode string) string {
+	const SSLMODE = "sslmode"
+	var v = make(url.Values)
+	v.Add(SSLMODE, sslmode)
+
+	var u = url.URL{
+		Scheme:   proto,
+		Host:     host,
+		Path:     path,
+		User:     url.UserPassword(user, password),
+		RawQuery: v.Encode(),
+	}
+	return u.String()
 }

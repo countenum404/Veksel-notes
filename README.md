@@ -25,7 +25,7 @@ REDIS_HOST=redis:6379
 ```http
   GET /api/notes
 ```
-**Header:** Authorization: Basic `base64 string` (required)
+**Header:** Authorization: Basic `base64 string` (required)   
 **Example:**
 ```bash
 curl --location 'http://localhost:4567/api/notes' \

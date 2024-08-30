@@ -21,4 +21,4 @@ INSERT INTO users(fisrtname, lastname, username, pwd) values
 ('Richard', 'Stallman', 'rstallman', 'Z251bGludXg=');
 -- superpassword
 -- drive
--- gnulover
+-- gnulinux

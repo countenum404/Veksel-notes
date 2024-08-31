@@ -14,5 +14,8 @@ build:
 migrate:
 	migrate -path ./schema -database 'postgres://$(DB_USER):$(POSTGRES_PASSWORD)@localhost/veksel?sslmode=disable' up
 
+testing:
+	go test -v ./tests
+
 clean:
 	docker compose rm -f -s

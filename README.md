@@ -14,8 +14,8 @@ REDIS_HOST=redis:6379
 Я использовал стандартного пользователя postgres из PostgreSQL
 
 #### Запуск проекта:   
-Проект запускается через: `make up` или командой `docker-compose up --build veksel`
-
+1. `make up` или `docker-compose up --build veksel` - запуск проекта
+2. `make testing` или `go test -v ./tests` - запуск автотестов
 
 ## API Reference
 
